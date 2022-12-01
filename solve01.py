@@ -7,10 +7,36 @@ def main():
     data = get_data(day=day, year=year)
 
     test_data_a = {
-        "": True,
+        """1000
+2000
+3000
+
+4000
+
+5000
+6000
+
+7000
+8000
+9000
+
+10000""": 24000,
     }
     test_data_b = {
-        "": True,
+        """1000
+2000
+3000
+
+4000
+
+5000
+6000
+
+7000
+8000
+9000
+
+10000""": 45000,
     }
 
     for i, (test, true) in enumerate(test_data_a.items()):
@@ -19,6 +45,7 @@ def main():
         assert result == true, f"{result} != {true}"
 
     result_a = solve_a(data)
+    print(f"result a: {result_a}\n")
     submit(result_a, part="a", day=day, year=year)
 
     for i, (test, true) in enumerate(test_data_b.items()):
@@ -27,17 +54,34 @@ def main():
         assert result == true, f"{result} != {true}"
 
     result_b = solve_b(data)
+    print(f"result b: {result_b}\n")
     submit(result_b, part="b", day=day, year=year)
 
 
 def solve_a(data):
     res = 0
+    cals = 0
+    for line in data.splitlines():
+        if line:
+            cals += int(line)
+        else:
+            res = max(res, cals)
+            cals = 0
+    res = max(res, cals)
     return res
 
 
 def solve_b(data):
-    res = 0
-    return res
+    elves = []
+    cals = 0
+    for line in data.splitlines():
+        if line:
+            cals += int(line)
+        else:
+            elves.append(cals)
+            cals = 0
+    elves.append(cals)
+    return sum(sorted(elves, reverse=True)[:3])
 
 
 if __name__ == "__main__":

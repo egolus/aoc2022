@@ -7,10 +7,20 @@ def main():
     data = get_data(day=day, year=year)
 
     test_data_a = {
-        "": True,
+            """vJrwpWtwJgWrhcsFMMfFFhFp
+jqHRNqRjqzjGDLGLrsFMfFZSrLrFZsSL
+PmmdzqPrVvPwwTWBwg
+wMqvLMZHhHMvwLHjbvcjnnSBnvTQFn
+ttgJtRGJQctTZtZT
+CrZsJsPPZsGzwwsLwLmpwMDw""": 157,
     }
     test_data_b = {
-        "": True,
+            """vJrwpWtwJgWrhcsFMMfFFhFp
+jqHRNqRjqzjGDLGLrsFMfFZSrLrFZsSL
+PmmdzqPrVvPwwTWBwg
+wMqvLMZHhHMvwLHjbvcjnnSBnvTQFn
+ttgJtRGJQctTZtZT
+CrZsJsPPZsGzwwsLwLmpwMDw""": 70,
     }
 
     for i, (test, true) in enumerate(test_data_a.items()):
@@ -31,13 +41,25 @@ def main():
 
 
 def solve_a(data):
-    res = 0
-    return res
+    chars = " abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    res = []
+    print(data)
+    for line in data.splitlines():
+        first, second = line[:len(line)//2], line[len(line)//2:]
+        res.append(set(first).intersection(set(second)).pop())
+    return sum([chars.index(c) for c in res])
 
 
 def solve_b(data):
-    res = 0
-    return res
+    chars = " abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    group = []
+    res = []
+    for i, line in enumerate(data.splitlines()):
+        group.append(line)
+        if i % 3 == 2:
+            res.append(set(group[0]).intersection(group[1]).intersection(group[2]).pop())
+            group.clear()
+    return sum([chars.index(c) for c in res])
 
 
 if __name__ == "__main__":

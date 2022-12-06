@@ -7,10 +7,17 @@ def main():
     data = get_data(day=day, year=year)
 
     test_data_a = {
-        "": True,
+        "mjqjpqmgbljsphdztnvjfqwrcgsmlb": 7,
+        "nppdvjthqldpwncqszvftbrmjlhg": 6,
+        "nznrnfrfntjfmvfwmzdfjlvtqnbhcprsg": 10,
+        "zcfzfwzzqfrljwzlrfnpqdbhtmscgvjw": 11,
     }
     test_data_b = {
-        "": True,
+        "mjqjpqmgbljsphdztnvjfqwrcgsmlb": 19,
+        "bvwbjplbgvbhsrlpgdmjqwftvncz": 23,
+        "nppdvjthqldpwncqszvftbrmjlhg": 23,
+        "nznrnfrfntjfmvfwmzdfjlvtqnbhcprsg": 29,
+        "zcfzfwzzqfrljwzlrfnpqdbhtmscgvjw": 26,
     }
 
     for i, (test, true) in enumerate(test_data_a.items()):
@@ -31,13 +38,15 @@ def main():
 
 
 def solve_a(data):
-    res = 0
-    return res
+    for i, c in enumerate(data):
+        if len(set(data[i:i+4])) == 4:
+            return i + 4
 
 
 def solve_b(data):
-    res = 0
-    return res
+    for i, c in enumerate(data):
+        if len(set(data[i:i+14])) == 14:
+            return i + 14
 
 
 if __name__ == "__main__":

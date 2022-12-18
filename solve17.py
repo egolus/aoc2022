@@ -13,13 +13,13 @@ def main():
         ">>><<><>><<<>><>>><<<>>><<<><<<>><>><<>>": 3068,
     }
     test_data_b = {
-        "": True,
+        ">>><<><>><<<>><>>><<<>>><<<><<<>><>><<>>": 1_514_285_714_288,
     }
 
-    # for i, (test, true) in enumerate(test_data_a.items()):
-        # result = solve_a(test)
-        # print(f"result {i}: {result}\n")
-        # assert result == true, f"{result} != {true}"
+    for i, (test, true) in enumerate(test_data_a.items()):
+        result = solve_a(test)
+        print(f"result {i}: {result}\n")
+        assert result == true, f"{result} != {true}"
 
     result_a = solve_a(data)
     submit(result_a, part="a", day=day, year=year)
@@ -42,9 +42,9 @@ class Game():
         [" # ",
          "###",
          " # "],
-        ["  #",
+        ["###",
          "  #",
-         "###"],
+         "  #"],
         ["#",
          "#",
          "#",
@@ -60,7 +60,7 @@ class Game():
     i = None
     moves = ""
 
-    def __init__(self, data):
+    def __init__(self, data, target):
         self.height = 0
         self.cave = {}
         self.jetpos = 0
@@ -95,11 +95,9 @@ class Game():
                 self.left += self.jet
                 self.right += self.jet
 
-        # print(">" if self.jet == 1 else "<", end="")
         # vertical movement (downwards)
         if self.checkCollision(vert=1):
             self.addRock()
-            # print(f"left: {self.left} jet: {self.jet} right: {self.right}")
             # self.debug()
             self.filedebug()
 
@@ -116,14 +114,14 @@ class Game():
     def checkCollision(self, hor=0, vert=0):
         if self.bot-vert <= -1:
             return True
-        for y in range(len(self.rock)+1):
+        for y in range(len(self.rock)):
             for x in range(self.width):
-                if (self.rock[len(self.rock)-1-y][x] == "#" and
+                if (self.rock[y][x] == "#" and
                         (self.bot+y-vert, self.left+x+hor) in self.cave):
                     return True
 
     def addRock(self):
-        for y, l in enumerate(reversed(self.rock)):
+        for y, l in enumerate(self.rock):
             for x, c in enumerate(l):
                 if c == "#":
                     self.cave[(y+self.bot, x+self.left)] = self.rockpos
@@ -180,23 +178,13 @@ class Game():
 
 
 def solve_a(data):
-    g = Game(data)
-    for y in range(g.height+5, -1, -1):
-        print("|", end="")
-        for x in range(7):
-            if (y, x) in g.cave:
-                print(g.cave[(y, x)], end="")
-            else:
-                print(".", end="")
-        print("|")
-    print("-"*9)
-    input("Press enter")
+    g = Game(data, target=2023)
     return g.height
 
 
 def solve_b(data):
-    res = 0
-    return res
+    g = Game(data, target=1_000_000_000_000)
+    return g.height
 
 
 if __name__ == "__main__":

@@ -1,7 +1,4 @@
 from aocd import submit, get_data
-import logging
-
-logging.basicConfig(filename="./debug.log", filemode="w", level=999)
 
 
 def main():
@@ -58,7 +55,7 @@ class Game():
     newcounter = None
     height = None
     i = None
-    moves = ""
+    positions = None
 
     def __init__(self, data, target):
         self.height = 0
@@ -67,9 +64,27 @@ class Game():
         self.rockpos = 0
         self.i = 0
         self.jets = [1 if c == ">" else -1 for c in data]
+        self.positions = set()
 
-        while self.i < 2023:
+        first = None
+        second = None
+        done = False
+        heightadded = 0
+        while self.i < target:
             self.step()
+            if not done and self.rock is None and (self.jetpos, self.rockpos) in self.positions:
+                if not first:
+                    first = (self.i, self.height, self.jetpos, self.rockpos)
+                elif not second:
+                    second = (self.i, self.height, self.jetpos, self.rockpos)
+                elif self.jetpos == second[2] and self.rockpos == second[3]:
+                    loop = self.i - second[0]
+                    times = (target-self.i) // loop
+                    heightadded = (self.height-second[1]) * times
+                    self.i += (self.i-second[0]) * times
+                    done = True
+            self.positions.add((self.jetpos, self.rockpos))
+        self.height += heightadded
 
     def step(self):
         if not self.rock:
@@ -80,14 +95,9 @@ class Game():
             self.bot = self.height + 3
             self.left = 2
             self.right = self.left + self.width
-            self.new = {}
-            self.newcounter = 0
-            self.moves = ""
-            print(self.i, self.height, end="\r")
 
         self.jet = self.jets[self.jetpos]
         self.jetpos = (self.jetpos + 1) % len(self.jets)
-        self.moves += ">" if self.jet == 1 else "<"
 
         # horizontal movement (by jet)
         if self.left + self.jet >= 0 and self.right + self.jet <= 7:
@@ -98,18 +108,8 @@ class Game():
         # vertical movement (downwards)
         if self.checkCollision(vert=1):
             self.addRock()
-            # self.debug()
-            self.filedebug()
 
         self.bot -= 1
-        if self.rock:
-            for y, l in enumerate(reversed(self.rock)):
-                for x, c in enumerate(l):
-                    if c == "#":
-                        self.new[(y+self.bot, x+self.left)] = self.newcounter
-
-        # if self.i >= 11:
-        self.newcounter += 1
 
     def checkCollision(self, hor=0, vert=0):
         if self.bot-vert <= -1:
@@ -127,54 +127,6 @@ class Game():
                     self.cave[(y+self.bot, x+self.left)] = self.rockpos
         self.height = max(y for (y, _) in self.cave) + 1
         self.rock = None
-        # self.debug()
-
-    def debug(self):
-        i = 0
-        print()
-
-        for y in range(self.height+5, -1, -1):
-            i += 1
-            print("|", end="")
-            for x in range(7):
-                if (y, x) in self.cave:
-                    print("#", end="")
-                elif (y, x) in self.new:
-                    print(str(self.new[(y, x)])[-1], end="")
-                else:
-                    print(".", end="")
-            print("|  |", end="")
-            for x in range(7):
-                if (y, x) in self.cave:
-                    print(self.cave[(y, x)], end="")
-                else:
-                    print(".", end="")
-            print("|")
-            if i > 20:
-                input("Press enter")
-                return
-        print("-"*9, "", "-"*9)
-        # print(self.bot, self.left, self.right)
-        input("Press enter")
-
-    def filedebug(self):
-        logging.warning("")
-        logging.warning("----------------------")
-        logging.warning(f"I: {self.i}")
-        logging.warning(self.moves)
-        ll = ""
-
-        for y in range(self.height+5, -1, -1):
-            ll += "|"
-            for x in range(7):
-                if (y, x) in self.cave:
-                    ll += str(self.cave[(y, x)])
-                else:
-                    ll += "."
-            ll += "|"
-            logging.warning(ll)
-            ll = ""
-        logging.warning("-"*9)
 
 
 def solve_a(data):
@@ -183,7 +135,7 @@ def solve_a(data):
 
 
 def solve_b(data):
-    g = Game(data, target=1_000_000_000_000)
+    g = Game(data, target=1_000_000_000_001)
     return g.height
 
 

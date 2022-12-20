@@ -7,10 +7,22 @@ def main():
     data = get_data(day=day, year=year)
 
     test_data_a = {
-        "": True,
+"""1
+2
+-3
+3
+-2
+0
+4""": 3,
     }
     test_data_b = {
-        "": True,
+"""1
+2
+-3
+3
+-2
+0
+4""": 1623178306,
     }
 
     for i, (test, true) in enumerate(test_data_a.items()):
@@ -31,13 +43,33 @@ def main():
 
 
 def solve_a(data):
-    res = 0
-    return res
+    numbers = [int(line) for line in data.splitlines()]
+    indices = list(range(len(numbers)))
+    for i, n in enumerate(numbers):
+        newpos = (indices.index(i) + n)
+        indices.remove(i)
+        indices.insert(newpos % len(indices), i)
+
+    start = indices.index(numbers.index(0))
+    return (numbers[indices[(start+1000) % len(indices)]] +
+            numbers[indices[(start+2000) % len(indices)]] +
+            numbers[indices[(start+3000) % len(indices)]])
 
 
 def solve_b(data):
-    res = 0
-    return res
+    key = 811589153
+    numbers = [int(line) * key for line in data.splitlines()]
+    indices = list(range(len(numbers)))
+    for r in range(10):
+        for i, n in enumerate(numbers):
+            newpos = (indices.index(i) + n)
+            indices.remove(i)
+            indices.insert(newpos % len(indices), i)
+
+    start = indices.index(numbers.index(0))
+    return (numbers[indices[(start+1000) % len(indices)]] +
+            numbers[indices[(start+2000) % len(indices)]] +
+            numbers[indices[(start+3000) % len(indices)]])
 
 
 if __name__ == "__main__":
